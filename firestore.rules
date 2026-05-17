@@ -1,0 +1,62 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Helper for ParkingLot validation
+    function isValidParkingLot(data) {
+      return data.keys().hasAll(['name', 'location', 'totalSpots', 'availableSpots', 'updatedAt']) &&
+             data.keys().size() == 5 &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+             data.location is string && data.location.size() <= 200 &&
+             data.totalSpots is number && data.totalSpots >= 0 &&
+             data.availableSpots is number && data.availableSpots >= 0 &&
+             data.updatedAt is string; // Using string as ISO date for simplicity in this demo
+    }
+
+    // Helper for ParkingSpot validation
+    function isValidParkingSpot(data) {
+      return data.keys().hasAll(['spotNumber', 'isOccupied', 'type', 'updatedAt']) &&
+             data.keys().size() == 4 &&
+             data.spotNumber is string && data.spotNumber.size() <= 10 &&
+             data.isOccupied is bool &&
+             data.type in ['regular', 'electric', 'handicap'] &&
+             data.updatedAt is string;
+    }
+
+    match /parkingLots/{lotId} {
+      allow read: if true; // Public view of parking lots
+      allow write: if isSignedIn(); // Simulation allowed if signed in
+
+      match /spots/{spotId} {
+        allow read: if true;
+        allow write: if isSignedIn();
+      }
+    }
+    
+    // Connectivity test
+    match /test/connection {
+      allow read: if true;
+    }
+  }
+}

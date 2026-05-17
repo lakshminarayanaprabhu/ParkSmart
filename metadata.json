@@ -1,0 +1,6 @@
+{
+  "name": "ParkSmart IoT",
+  "description": "A real-time smart parking availability tracker with IoT integration simulation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

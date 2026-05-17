@@ -1,0 +1,39 @@
+{
+  "entities": {
+    "parkingLot": {
+      "title": "Parking Lot",
+      "description": "A parking facility containing multiple spots.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "location": { "type": "string" },
+        "totalSpots": { "type": "number" },
+        "availableSpots": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "location", "totalSpots"]
+    },
+    "parkingSpot": {
+      "title": "Parking Spot",
+      "description": "A single spot within a parking lot.",
+      "type": "object",
+      "properties": {
+        "spotNumber": { "type": "string" },
+        "isOccupied": { "type": "boolean" },
+        "type": { "type": "string", "enum": ["regular", "electric", "handicap"] },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["spotNumber", "isOccupied"]
+    }
+  },
+  "firestore": {
+    "parkingLots": {
+      "schema": "parkingLot",
+      "description": "Global list of parking lots."
+    },
+    "parkingLots/{lotId}/spots": {
+      "schema": "parkingSpot",
+      "description": "Detailed spots for a specific lot."
+    }
+  }
+}
